@@ -23,7 +23,6 @@ public class ProductController {
     public void createProduct(@RequestBody ProductRequest productRequest) {
         System.out.println("I have been called");
         productService.createProduct(productRequest);
-
     }
 
     @GetMapping
