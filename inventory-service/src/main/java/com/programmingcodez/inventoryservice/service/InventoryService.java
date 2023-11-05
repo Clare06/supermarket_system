@@ -39,7 +39,7 @@ public class InventoryService {
         List<InventoryResponse> inventoryResponse = inventoryList.stream()
                 .map(inventory -> InventoryResponse.builder()
                         .skuCode(inventory.getSkuCode())
-                        .isInStock(inventory.getQuantity() > this.getReqQuantity(inventory.getSkuCode(), inventoryRequest))
+                        .isInStock(inventory.getQuantity() >= this.getReqQuantity(inventory.getSkuCode(), inventoryRequest))
                         .build()
                 )
                 .collect(Collectors.toList());
