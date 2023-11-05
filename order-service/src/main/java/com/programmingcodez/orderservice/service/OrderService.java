@@ -1,5 +1,6 @@
 package com.programmingcodez.orderservice.service;
 
+import com.programmingcodez.orderservice.dto.InventoryRequest;
 import com.programmingcodez.orderservice.dto.OrderLineItemsDto;
 import com.programmingcodez.orderservice.dto.OrderRequest;
 import com.programmingcodez.orderservice.entity.Order;
@@ -31,9 +32,11 @@ public class OrderService {
 
         order.setOrderLineItemsList(orderLineItems);
 
-        List<String> skuCodes = order.getOrderLineItemsList().stream()
-                .map(OrderLineItem::getSkuCode)
+        List<InventoryRequest> skuCodes = orderLineItems.stream()
+                .map(item-> new InventoryRequest(item.getSkuCode(),item.getQuantity()))
                 .toList();
+
+//        System.out.println(skuCodes);
         orderRepository.save(order);
         return skuCodes.toString()+orderLineItems.toString();
 //        return skuCodes.toString();
