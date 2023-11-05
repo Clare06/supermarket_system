@@ -1,15 +1,20 @@
 package com.programmingcodez.userservice.service;
 
+import com.programmingcodez.userservice.Exceptions.UsernameDuplicationException;
 import com.programmingcodez.userservice.dto.LoginInfo;
 import com.programmingcodez.userservice.entity.User;
 import com.programmingcodez.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
+
+    private UsernameDuplicationException usernameDuplicationException;
     @Autowired
     private UserRepository userRepository;
 
@@ -30,13 +35,14 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User addUser(User user) {
-        if(checkUser(user.getUserName())){
-            return null;
-        }
-        else{
 
-            return this.userRepository.save(user);
-        }
+            if (checkUser(user.getUserName())) {
+                throw new UsernameDuplicationException("Username is already taken: " + user.getUserName());
+            } else {
+
+                return this.userRepository.save(user);
+            }
+
 
     }
 
@@ -44,7 +50,7 @@ public class UserServiceImp implements UserService {
     public User editUser(User user) {
         if (checkUser(user.getUserName())){
             Optional<User> temp = getUser(user.getUserName());
-            user.setAdminAcc(temp.get().isAdminAcc());
+            user.setCus(temp.get().isCus());
             return this.userRepository.save(user);
         }
         else {

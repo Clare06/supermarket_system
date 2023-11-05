@@ -1,9 +1,7 @@
 package com.programmingcodez.userservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,9 +25,9 @@ public class User {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dob;
-    private boolean adminAcc;
+    private boolean isCus;
 
-    //    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
 //    private Role role;
 
 

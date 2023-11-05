@@ -1,5 +1,6 @@
 package com.programmingcodez.userservice.controller;
 
+import com.programmingcodez.userservice.Exceptions.UsernameDuplicationException;
 import com.programmingcodez.userservice.dto.LoginInfo;
 import com.programmingcodez.userservice.entity.User;
 import com.programmingcodez.userservice.jwt.JwtUtil;
@@ -38,8 +39,15 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<User> addUser(@RequestBody User user){
-        return new ResponseEntity<>(this.userService.addUser(user), HttpStatus.OK);
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        try {
+            User addedUser = userService.addUser(user);
+            return ResponseEntity.ok(addedUser);
+        } catch (UsernameDuplicationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request.");
+        }
     }
 
     @PutMapping("/editUser")
