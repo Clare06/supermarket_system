@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+
+import java.sql.Timestamp;
 import java.util.List;
 @Entity
 @Table(name = "t_orders")
@@ -23,5 +25,6 @@ public class Order {
     public enum OrderStatus{
         PENDING,COMPLETED,FAILED
     }
+    private Timestamp timestamp;
 }
 

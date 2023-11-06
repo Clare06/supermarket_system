@@ -10,11 +10,14 @@ import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,6 +61,7 @@ public class OrderService {
             order.setOrderNumber(UUID.randomUUID().toString());
             order.setOrderLineItemsList(orderLineItems);
             order.setStatus(Order.OrderStatus.PENDING);
+            order.setTimestamp(new Timestamp(System.currentTimeMillis()));
             orderRepository.save(order);
             return order.getId();
         } else {
@@ -86,6 +90,14 @@ public class OrderService {
         }
 
         return  "Order Cancelled";
+    }
+    @Scheduled(fixedRate = 6000)
+    public void cleanupPendingOrders() {
+        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(2);
+        List<Order> pendingOrders = orderRepository.findByStatusAndTimestampBefore(Order.OrderStatus.PENDING, Timestamp.valueOf(tenMinutesAgo));
+        for (Order order : pendingOrders) {
+            orderRepository.delete(order);
+        }
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemsDto) {
         OrderLineItem orderLineItems = new OrderLineItem();
