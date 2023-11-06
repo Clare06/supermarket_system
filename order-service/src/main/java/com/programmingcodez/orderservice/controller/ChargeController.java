@@ -1,6 +1,7 @@
 package com.programmingcodez.orderservice.controller;
 
 import com.programmingcodez.orderservice.dto.ChargeRequest;
+import com.programmingcodez.orderservice.dto.ChargeResponse;
 import com.programmingcodez.orderservice.service.StripeService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -20,19 +21,19 @@ public class ChargeController {
     private StripeService paymentsService;
 
     @PostMapping("/charge")
-    public Map<String, Object> charge(@RequestBody ChargeRequest chargeRequest)
+    public ChargeResponse charge(@RequestBody ChargeRequest chargeRequest)
             throws StripeException {
         chargeRequest.setDescription("Example charge");
         chargeRequest.setCurrency(ChargeRequest.Currency.EUR);
         Charge charge = paymentsService.charge(chargeRequest);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", charge.getId());
-        response.put("status", charge.getStatus());
-        response.put("chargeId", charge.getId());
-        response.put("balance_transaction", charge.getBalanceTransaction());
+        ChargeResponse chargeResponse = new ChargeResponse();
+        chargeResponse.setChargeId(charge.getId());
+        chargeResponse.setStatus(charge.getStatus());
+        chargeResponse.setChargeId(charge.getId());
+        chargeResponse.setBalanceTransaction(charge.getBalanceTransaction());
 
-        return response;
+        return chargeResponse;
     }
 
     @ExceptionHandler(StripeException.class)

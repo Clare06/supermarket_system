@@ -19,4 +19,9 @@ public class Order {
     private String orderNumber;
     @OneToMany(cascade = CascadeType.ALL)
     private List<OrderLineItem> orderLineItemsList;
+    private OrderStatus status;
+    public enum OrderStatus{
+        PENDING,COMPLETED,FAILED
+    }
 }
+
