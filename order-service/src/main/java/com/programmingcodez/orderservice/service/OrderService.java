@@ -111,7 +111,20 @@ public class OrderService {
         LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(5);
         List<Order> pendingOrders = orderRepository.findByStatusAndTimestampBefore(Order.OrderStatus.PENDING, Timestamp.valueOf(tenMinutesAgo));
         for (Order order : pendingOrders) {
-            orderRepository.delete(order);
+            List<OrderLineItem> orderLineItems= order.getOrderLineItemsList();
+            List<InventoryRequest> skuCodes = orderLineItems.stream()
+                    .map(item-> new InventoryRequest(item.getSkuCode(),item.getQuantity()))
+                    .toList();
+            String rollBackInventory= webClientBuilder.build()
+                    .put()
+                    .uri("http://localhost:8084/api/inventory/roll-back")
+                    .bodyValue(skuCodes)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            if(rollBackInventory.equals("inventory-updated")) {
+                orderRepository.delete(order);
+            }
         }
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemsDto) {

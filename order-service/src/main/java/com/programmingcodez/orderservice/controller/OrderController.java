@@ -47,7 +47,7 @@ public class OrderController {
             return ResponseEntity.ok(result);
         } catch (WebClientException ex) {
             orderService.removeOrder(completeRequestDto.getInventoryUpdateRequest().getOrderID());
-            String upInventory= webClientBuilder.build()
+            String rollBackInventory= webClientBuilder.build()
                     .put()
                     .uri("http://localhost:8084/api/inventory/roll-back")
                     .bodyValue(completeRequestDto.getInventoryUpdateRequest().getInventoryRequests())

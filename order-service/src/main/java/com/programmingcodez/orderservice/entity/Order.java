@@ -20,7 +20,7 @@ public class Order {
     private Long id;
     private String orderNumber;
     private String userName;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderLineItem> orderLineItemsList;
     private OrderStatus status;
     public enum OrderStatus{
