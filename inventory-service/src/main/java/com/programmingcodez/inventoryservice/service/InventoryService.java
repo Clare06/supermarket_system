@@ -75,4 +75,22 @@ public class InventoryService {
         }
 
     }
+    @Transactional
+    public void rollBackInventory(String skuCode, Integer quantityToDeduct) {
+        Inventory item = inventoryRepository.findBySkuCode(skuCode);
+        if(item.getQuantity() >= quantityToDeduct){
+            item.setQuantity(item.getQuantity() + quantityToDeduct);
+            inventoryRepository.save(item);
+        }
+
+    }
+    @Transactional
+    public String rollBackUpdate(List<InventoryRequest> inventoryRequest) {
+        for (InventoryRequest inventoryReq : inventoryRequest) {
+            String skuCode = inventoryReq.getSkuCode();
+            Integer quantityToDeduct = inventoryReq.getQuantity();
+            this.rollBackInventory(skuCode, quantityToDeduct);
+        }
+        return "inventory-updated";
+    }
 }

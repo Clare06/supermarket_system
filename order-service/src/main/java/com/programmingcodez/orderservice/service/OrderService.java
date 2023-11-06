@@ -33,13 +33,13 @@ public class OrderService {
     @Autowired
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
-//    private final ChargeController chargeController;
+
     @Transactional
     public void removeOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
     @Transactional
-    public Long placeOrder(OrderRequest orderRequest, String username) throws ItemsNotInStockException {
+    public InventoryUpdateRequestDto placeOrder(OrderRequest orderRequest, String username) throws ItemsNotInStockException {
 
         List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
@@ -74,7 +74,7 @@ public class OrderService {
             order.setStatus(Order.OrderStatus.PENDING);
             order.setTimestamp(new Timestamp(System.currentTimeMillis()));
             orderRepository.save(order);
-            return order.getId();
+            return new InventoryUpdateRequestDto(order.getId(), skuCodes);
             }else {
                 throw new IllegalStateException("Inventory-error");
             }
@@ -85,7 +85,7 @@ public class OrderService {
     @Transactional
     public String completeOrder(CompleteRequestDto completeRequestDto) {
         String chargeEndpoint = "http://localhost:8081/api/charge";
-        Optional<Order> trnsOrder = orderRepository.findById(completeRequestDto.getOrderId());
+        Optional<Order> trnsOrder = orderRepository.findById(completeRequestDto.getInventoryUpdateRequest().getOrderID());
         try {
             ChargeResponse response = webClientBuilder.build()
                     .post()
@@ -108,7 +108,7 @@ public class OrderService {
     }
     @Scheduled(fixedRate = 6000)
     public void cleanupPendingOrders() {
-        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(5);
         List<Order> pendingOrders = orderRepository.findByStatusAndTimestampBefore(Order.OrderStatus.PENDING, Timestamp.valueOf(tenMinutesAgo));
         for (Order order : pendingOrders) {
             orderRepository.delete(order);

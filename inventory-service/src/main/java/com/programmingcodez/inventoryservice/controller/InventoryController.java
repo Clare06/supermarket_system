@@ -31,5 +31,8 @@ public class InventoryController {
     public String updateInventory(@RequestBody List<InventoryRequest> inventoryRequest){
         return inventoryService.updateInventory(inventoryRequest);
     }
-
+    @PutMapping("roll-back")
+    public String rollBack(@RequestBody List<InventoryRequest> inventoryRequest){
+        return inventoryService.rollBackUpdate(inventoryRequest);
+    }
 }
