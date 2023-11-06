@@ -5,6 +5,7 @@ import com.programmingcodez.inventoryservice.dto.InventoryRequest;
 import com.programmingcodez.inventoryservice.dto.InventoryResponse;
 import com.programmingcodez.inventoryservice.entity.Inventory;
 import com.programmingcodez.inventoryservice.repository.InventoryRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,23 @@ public class InventoryService {
         }
         return 0;
     }
+    @Transactional
+    public String updateInventory(List<InventoryRequest> inventoryRequest) {
 
+        for (InventoryRequest inventoryReq : inventoryRequest) {
+            String skuCode = inventoryReq.getSkuCode();
+            Integer quantityToDeduct = inventoryReq.getQuantity();
+           this.deductInventory(skuCode, quantityToDeduct);
+        }
+        return "inventory-updated";
+    }
+    @Transactional
+    public void deductInventory(String skuCode, Integer quantityToDeduct) {
+        Inventory item = inventoryRepository.findBySkuCode(skuCode);
+        if(item.getQuantity() >= quantityToDeduct){
+            item.setQuantity(item.getQuantity() - quantityToDeduct);
+            inventoryRepository.save(item);
+        }
+
+    }
 }

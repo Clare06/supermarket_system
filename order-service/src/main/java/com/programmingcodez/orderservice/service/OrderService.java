@@ -10,6 +10,8 @@ import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -37,7 +39,7 @@ public class OrderService {
         orderRepository.deleteById(orderId);
     }
     @Transactional
-    public Long placeOrder(OrderRequest orderRequest) throws ItemsNotInStockException {
+    public Long placeOrder(OrderRequest orderRequest, String username) throws ItemsNotInStockException {
 
         List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
@@ -57,13 +59,25 @@ public class OrderService {
         Boolean notAllStockIn=invenResponse.stream().anyMatch(item -> item.isInStock()==false);
 
         if(!notAllStockIn){
+            String inventory= webClientBuilder.build()
+                    .put()
+                    .uri("http://localhost:8084/api/inventory")
+                    .bodyValue(skuCodes)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            if (inventory.equals("inventory-updated")) {
             Order order = new Order();
             order.setOrderNumber(UUID.randomUUID().toString());
+            order.setUserName(username);
             order.setOrderLineItemsList(orderLineItems);
             order.setStatus(Order.OrderStatus.PENDING);
             order.setTimestamp(new Timestamp(System.currentTimeMillis()));
             orderRepository.save(order);
             return order.getId();
+            }else {
+                throw new IllegalStateException("Inventory-error");
+            }
         } else {
             throw  new ItemsNotInStockException(invenResponse);
         }
@@ -82,6 +96,7 @@ public class OrderService {
                     .block();
             if (response.getStatus().equals("succeeded")){
                 trnsOrder.get().setStatus(Order.OrderStatus.COMPLETED);
+
                 orderRepository.save(trnsOrder.get());
                 return "order completed";
             }

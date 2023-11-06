@@ -27,4 +27,9 @@ public class InventoryController {
     public List<InventoryResponse> isInStock(@RequestBody List<InventoryRequest> inventoryRequest){
         return inventoryService.isInStock(inventoryRequest);
     }
+    @PutMapping
+    public String updateInventory(@RequestBody List<InventoryRequest> inventoryRequest){
+        return inventoryService.updateInventory(inventoryRequest);
+    }
+
 }

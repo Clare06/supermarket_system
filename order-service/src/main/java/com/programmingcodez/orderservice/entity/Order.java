@@ -19,6 +19,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String orderNumber;
+    private String userName;
     @OneToMany(cascade = CascadeType.ALL)
     private List<OrderLineItem> orderLineItemsList;
     private OrderStatus status;

@@ -25,10 +25,10 @@ public class OrderController {
     @Autowired
     private final OrderService orderService;
 
-    @PostMapping
-    public ResponseEntity<?> placeOrder(@RequestBody OrderRequest orderRequest) {
+    @PostMapping("{username}")
+    public ResponseEntity<?> placeOrder(@RequestBody OrderRequest orderRequest,@PathVariable("username") String username) {
         try {
-            Long orderId = orderService.placeOrder(orderRequest);
+            Long orderId = orderService.placeOrder(orderRequest,username);
             return ResponseEntity.ok(orderId); // Return the order ID if successful
         } catch (ItemsNotInStockException ex) {
             List<InventoryResponse> inventoryResponses = ex.getInventoryResponses(); // Get the inventory responses from the exception
