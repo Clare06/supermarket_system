@@ -96,6 +96,17 @@ public class OrderService {
                     .block();
             if (response.getStatus().equals("succeeded")){
                 trnsOrder.get().setStatus(Order.OrderStatus.COMPLETED);
+                //set tracking status
+                trnsOrder.get().setTrackingStatus(Order.TrackingStatus.PROCESSING);
+                TrackingInfo trackingInfo = new TrackingInfo(trnsOrder.get().getOrderNumber(), Order.TrackingStatus.PROCESSING);
+
+                this.webClientBuilder.build()
+                                .post()
+                                .uri("http://localhost:8083/api/tracking/setStatus")
+                                .bodyValue(trackingInfo)
+                                .retrieve()
+                                .toBodilessEntity()
+                                .block();
 
                 orderRepository.save(trnsOrder.get());
                 return "order completed";
