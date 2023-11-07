@@ -10,6 +10,8 @@ import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,13 +33,13 @@ public class OrderService {
     @Autowired
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
-//    private final ChargeController chargeController;
+
     @Transactional
     public void removeOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
     @Transactional
-    public Long placeOrder(OrderRequest orderRequest) throws ItemsNotInStockException {
+    public InventoryUpdateRequestDto placeOrder(OrderRequest orderRequest, String username) throws ItemsNotInStockException {
 
         List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
@@ -57,13 +59,25 @@ public class OrderService {
         Boolean notAllStockIn=invenResponse.stream().anyMatch(item -> item.isInStock()==false);
 
         if(!notAllStockIn){
+            String inventory= webClientBuilder.build()
+                    .put()
+                    .uri("http://localhost:8084/api/inventory")
+                    .bodyValue(skuCodes)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            if (inventory.equals("inventory-updated")) {
             Order order = new Order();
             order.setOrderNumber(UUID.randomUUID().toString());
+            order.setUserName(username);
             order.setOrderLineItemsList(orderLineItems);
             order.setStatus(Order.OrderStatus.PENDING);
             order.setTimestamp(new Timestamp(System.currentTimeMillis()));
             orderRepository.save(order);
-            return order.getId();
+            return new InventoryUpdateRequestDto(order.getId(), skuCodes);
+            }else {
+                throw new IllegalStateException("Inventory-error");
+            }
         } else {
             throw  new ItemsNotInStockException(invenResponse);
         }
@@ -71,7 +85,7 @@ public class OrderService {
     @Transactional
     public String completeOrder(CompleteRequestDto completeRequestDto) {
         String chargeEndpoint = "http://localhost:8081/api/charge";
-        Optional<Order> trnsOrder = orderRepository.findById(completeRequestDto.getOrderId());
+        Optional<Order> trnsOrder = orderRepository.findById(completeRequestDto.getInventoryUpdateRequest().getOrderID());
         try {
             ChargeResponse response = webClientBuilder.build()
                     .post()
@@ -82,6 +96,7 @@ public class OrderService {
                     .block();
             if (response.getStatus().equals("succeeded")){
                 trnsOrder.get().setStatus(Order.OrderStatus.COMPLETED);
+
                 orderRepository.save(trnsOrder.get());
                 return "order completed";
             }
@@ -93,10 +108,23 @@ public class OrderService {
     }
     @Scheduled(fixedRate = 6000)
     public void cleanupPendingOrders() {
-        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(5);
         List<Order> pendingOrders = orderRepository.findByStatusAndTimestampBefore(Order.OrderStatus.PENDING, Timestamp.valueOf(tenMinutesAgo));
         for (Order order : pendingOrders) {
-            orderRepository.delete(order);
+            List<OrderLineItem> orderLineItems= order.getOrderLineItemsList();
+            List<InventoryRequest> skuCodes = orderLineItems.stream()
+                    .map(item-> new InventoryRequest(item.getSkuCode(),item.getQuantity()))
+                    .toList();
+            String rollBackInventory= webClientBuilder.build()
+                    .put()
+                    .uri("http://localhost:8084/api/inventory/roll-back")
+                    .bodyValue(skuCodes)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            if(rollBackInventory.equals("inventory-updated")) {
+                orderRepository.delete(order);
+            }
         }
     }
     private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemsDto) {
