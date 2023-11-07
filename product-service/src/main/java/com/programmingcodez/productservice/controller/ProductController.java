@@ -33,10 +33,10 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{skucode}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> deleteProduct(@PathVariable String id) {
-        boolean deleted = productService.deleteProductById(id);
+    public ResponseEntity<String> deleteProduct(@PathVariable String skucode) {
+        boolean deleted = productService.deleteProductById(skucode);
 
         if (deleted) {
             return ResponseEntity.ok("Product deleted successfully");
@@ -45,10 +45,10 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{skucode}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> updateProduct(@PathVariable String id, @RequestBody ProductRequest productRequest) {
-        boolean updated = productService.updateProduct(id, productRequest);
+    public ResponseEntity<String> updateProduct(@PathVariable String skucode, @RequestBody ProductRequest productRequest) {
+        boolean updated = productService.updateProduct(skucode, productRequest);
 
         if (updated) {
             return ResponseEntity.ok("Product details updated successfully");
@@ -57,32 +57,25 @@ public class ProductController {
         }
     }
 
-    // Mapping of Inserting image to a product
-    @PostMapping("/{id}/image")
-    public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
-        try {
-            Product product = productService.getProductById(id);
-            if (product != null) {
-                byte[] imageBytes = file.getBytes();
-                productService.updateProductImage(id, imageBytes);
-                return ResponseEntity.ok("Image uploaded successfully");
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed");
-        }
+    // Uploading image to a product
+
+    @PostMapping("/{skuCode}/image")
+    public ResponseEntity<String> uploadImage(@PathVariable String skuCode, @RequestParam("imageUrl") String imageUrl) {
+        String result = productService.uploadProductImage(skuCode, imageUrl);
+        return ResponseEntity.ok(result);
     }
 
-    // getting the image
-    @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getImage(@PathVariable String id) {
-        Product product = productService.getProductById(id);
-        if (product != null && product.getImage() != null) {
-            return ResponseEntity.ok(product.getImage());
+    // Getting image of a product
+    @GetMapping("/{skuCode}/image")
+    public ResponseEntity<String> getImageUrl(@PathVariable String skuCode) {
+        Product product = productService.getProductBySkuCode(skuCode);
+        if (product != null && product.getImageURl() != null) {
+            return ResponseEntity.ok(product.getImageURl());
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 
 }

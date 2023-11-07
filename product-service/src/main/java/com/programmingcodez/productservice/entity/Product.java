@@ -1,6 +1,5 @@
 package com.programmingcodez.productservice.entity;
 
-import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,12 +17,11 @@ import java.math.BigDecimal;
 public class Product {
 
     @Id
-    private String id;
+    private String skucode;
     private String name;
     private String description;
     private BigDecimal price;
     private String category;
     // product image
-    @Lob
-    private byte[]image;
+    private String imageURl;
 }
