@@ -1,5 +1,6 @@
 package com.programmingcodez.productservice.dto;
 
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductRequest {
-    private String skuCode;
+    private String id;
     private String name;
     private String description;
     private BigDecimal price;
+    private String category;
+    @Lob
+    private byte[]image;
 }

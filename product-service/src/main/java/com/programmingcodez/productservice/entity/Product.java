@@ -1,5 +1,6 @@
 package com.programmingcodez.productservice.entity;
 
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,8 @@ public class Product {
     private String name;
     private String description;
     private BigDecimal price;
+    private String category;
+    // product image
+    @Lob
+    private byte[]image;
 }
