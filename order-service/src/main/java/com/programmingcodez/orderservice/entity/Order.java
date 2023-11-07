@@ -23,9 +23,19 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderLineItem> orderLineItemsList;
     private OrderStatus status;
+    private Timestamp timestamp;
+
+    //tracking
+    private TrackingStatus trackingStatus;
+
+    public enum TrackingStatus{
+        PROCESSING,
+        SHIPPED,
+        DELIVERED
+    }
+
     public enum OrderStatus{
         PENDING,COMPLETED,FAILED
     }
-    private Timestamp timestamp;
 }
 
