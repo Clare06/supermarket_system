@@ -1,6 +1,5 @@
 package com.programmingcodez.productservice.entity;
 
-import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
