@@ -5,10 +5,12 @@ import com.programmingcodez.productservice.dto.ProductResponse;
 import com.programmingcodez.productservice.entity.Product;
 import com.programmingcodez.productservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public void createProduct(@RequestBody ProductRequest productRequest) {
         productService.createProduct(productRequest);
+
     }
 
     @GetMapping

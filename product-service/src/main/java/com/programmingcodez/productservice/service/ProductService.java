@@ -5,15 +5,17 @@ import com.programmingcodez.productservice.dto.ProductResponse;
 import com.programmingcodez.productservice.entity.Product;
 import com.programmingcodez.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
-    @Autowired
-    private  ProductRepository productRepository;
+
+    private final ProductRepository productRepository;
 
     public void createProduct(ProductRequest productRequest) {
         // Creating instance of the product object
