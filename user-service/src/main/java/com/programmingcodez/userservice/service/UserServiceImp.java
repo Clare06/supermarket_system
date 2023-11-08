@@ -1,5 +1,6 @@
 package com.programmingcodez.userservice.service;
 
+import com.programmingcodez.userservice.Exceptions.UserNotFoundException;
 import com.programmingcodez.userservice.Exceptions.UsernameDuplicationException;
 import com.programmingcodez.userservice.dto.LoginInfo;
 import com.programmingcodez.userservice.entity.User;
@@ -54,7 +55,7 @@ public class UserServiceImp implements UserService {
             return this.userRepository.save(user);
         }
         else {
-            return null;
+            throw new UserNotFoundException("Username "+user.getUserName()+" is Not Found ");
         }
     }
 
@@ -65,7 +66,7 @@ public class UserServiceImp implements UserService {
             return "User "+ userName +" Deleted";
         }
         else {
-            return null;
+            throw new UserNotFoundException("Username "+userName+" is Not Found ");
         }
     }
 

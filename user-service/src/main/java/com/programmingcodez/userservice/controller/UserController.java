@@ -35,6 +35,7 @@ public class UserController {
 
     @GetMapping("/checkUser/{userName}")
     public ResponseEntity<Boolean> checkUser(@PathVariable String userName){
+        Boolean result=this.userService.checkUser(userName);
         return new ResponseEntity<>(this.userService.checkUser(userName), HttpStatus.OK);
     }
 
@@ -60,13 +61,6 @@ public class UserController {
         return new ResponseEntity<>(this.userService.deleteUser(userName), HttpStatus.OK);
     }
 
-    @PostMapping("authenticate")
-    public ResponseEntity<String> authenticate(@RequestBody LoginInfo loginInfo) {
 
-        if (this.userService.userAuth(loginInfo)){
-            String token = jwtUtil.generateToken(loginInfo);
-            return ResponseEntity.ok(token);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
-    }
+
 }
