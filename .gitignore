@@ -70,7 +70,7 @@ node_modules/
 .git/
 
 .DS_Store
-order-service/src/main/resources/application.properties
-inventory-service/src/main/resources/application.properties
-inventory-service/src/main/resources/application.properties
-order-service/src/main/resources/application.properties
+#order-service/src/main/resources/application.properties
+#inventory-service/src/main/resources/application.properties
+#inventory-service/src/main/resources/application.properties
+#order-service/src/main/resources/application.properties
