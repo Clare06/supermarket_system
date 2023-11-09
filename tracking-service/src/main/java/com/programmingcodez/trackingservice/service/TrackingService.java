@@ -1,8 +1,10 @@
 package com.programmingcodez.trackingservice.service;
 
+
 import com.programmingcodez.trackingservice.Enum.OrderStatus;
 import com.programmingcodez.trackingservice.dto.AcceptDeliveryDto;
 import com.programmingcodez.trackingservice.dto.OrderListDto;
+
 import com.programmingcodez.trackingservice.entity.TrackingInfo;
 import com.programmingcodez.trackingservice.repository.TrackingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 public class TrackingService {
@@ -19,9 +23,11 @@ public class TrackingService {
     @Autowired
     private TrackingRepository trackingRepository;
 
+
     public ResponseEntity<List<TrackingInfo>> getAllOrders(){
         return new ResponseEntity<>(this.trackingRepository.findAll(), HttpStatus.OK);
     }
+
 
     public ResponseEntity<TrackingInfo> trackOrder(String orderNumber){
         if(this.trackingRepository.existsById(orderNumber)){
@@ -32,7 +38,9 @@ public class TrackingService {
         }
     }
 
+
     public ResponseEntity<Void> createOrderTracking(TrackingInfo orderInfo){
+
         this.trackingRepository.save(orderInfo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -81,4 +89,5 @@ public class TrackingService {
         orderListDto.setOrderStatus(trackingInfo.getOrderStatus());
         return orderListDto;
     }
+
 }

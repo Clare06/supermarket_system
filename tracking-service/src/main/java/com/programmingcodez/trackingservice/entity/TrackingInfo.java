@@ -21,5 +21,6 @@ public class TrackingInfo {
 
     private OrderStatus orderStatus;
 
+
     private String carrierId;
 }

@@ -50,7 +50,7 @@ public class OrderService {
                 .toList();
         List<InventoryResponse> invenResponse = webClientBuilder.build()
                 .post()
-                .uri("http://localhost:8084/api/inventory/stock")
+                .uri("http://inventory-service/api/inventory/stock")
                 .bodyValue(skuCodes) // Set the list as the request body
                 .retrieve()
                 .bodyToFlux(InventoryResponse.class)
@@ -61,7 +61,7 @@ public class OrderService {
         if(!notAllStockIn){
             String inventory= webClientBuilder.build()
                     .put()
-                    .uri("http://localhost:8084/api/inventory")
+                    .uri("http://inventory-service/api/inventory")
                     .bodyValue(skuCodes)
                     .retrieve()
                     .bodyToMono(String.class)
@@ -84,7 +84,7 @@ public class OrderService {
     }
     @Transactional
     public String completeOrder(CompleteRequestDto completeRequestDto) {
-        String chargeEndpoint = "http://localhost:8081/api/charge";
+        String chargeEndpoint = "http://order-service/api/charge";
         Optional<Order> trnsOrder = orderRepository.findById(completeRequestDto.getInventoryUpdateRequest().getOrderID());
         try {
             ChargeResponse response = webClientBuilder.build()
@@ -102,7 +102,7 @@ public class OrderService {
 
                 this.webClientBuilder.build()
                                 .post()
-                                .uri("http://localhost:8083/api/tracking/createStatus")
+                                .uri("http://tracking-service/api/tracking/createStatus")
                                 .bodyValue(trackingInfo)
                                 .retrieve()
                                 .toBodilessEntity()
@@ -128,7 +128,7 @@ public class OrderService {
                     .toList();
             String rollBackInventory= webClientBuilder.build()
                     .put()
-                    .uri("http://localhost:8084/api/inventory/roll-back")
+                    .uri("http://inventory-service/api/inventory/roll-back")
                     .bodyValue(skuCodes)
                     .retrieve()
                     .bodyToMono(String.class)

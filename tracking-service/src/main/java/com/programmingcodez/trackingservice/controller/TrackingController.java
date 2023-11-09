@@ -1,14 +1,18 @@
 package com.programmingcodez.trackingservice.controller;
 
+
 import com.programmingcodez.trackingservice.dto.AcceptDeliveryDto;
 import com.programmingcodez.trackingservice.dto.OrderListDto;
+
 import com.programmingcodez.trackingservice.entity.TrackingInfo;
 import com.programmingcodez.trackingservice.service.TrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/tracking")
@@ -21,6 +25,7 @@ public class TrackingController {
     public ResponseEntity<TrackingInfo> trackOrder(@PathVariable String orderNumber){
         return this.trackingService.trackOrder(orderNumber);
     }
+
 
     @GetMapping("/trackAll")
     public ResponseEntity<List<TrackingInfo>> trackAllOrders(){
@@ -46,4 +51,5 @@ public class TrackingController {
     public ResponseEntity<Void> completeDelivery (@PathVariable String orderNumber){
         return this.trackingService.completeDelivery(orderNumber);
     }
+  
 }
