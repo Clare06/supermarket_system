@@ -102,7 +102,7 @@ public class OrderService {
 
                 this.webClientBuilder.build()
                                 .post()
-                                .uri("http://localhost:8083/api/tracking/setStatus")
+                                .uri("http://localhost:8083/api/tracking/createStatus")
                                 .bodyValue(trackingInfo)
                                 .retrieve()
                                 .toBodilessEntity()

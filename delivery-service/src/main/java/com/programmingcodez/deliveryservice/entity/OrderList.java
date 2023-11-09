@@ -1,7 +1,6 @@
-package com.programmingcodez.trackingservice.entity;
+package com.programmingcodez.deliveryservice.entity;
 
-
-import com.programmingcodez.trackingservice.Enum.OrderStatus;
+import com.programmingcodez.deliveryservice.Enum.OrderStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -9,17 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name = "tracking_info")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class TrackingInfo {
+@Table(name = "t_order_list")
+public class OrderList {
 
     @Id
     private String orderNumber;
 
     private OrderStatus orderStatus;
-
-    private String carrierId;
 }
