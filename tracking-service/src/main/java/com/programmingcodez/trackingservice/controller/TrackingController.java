@@ -14,6 +14,7 @@ public class TrackingController {
     private TrackingService trackingService;
 
     @GetMapping("/{orderNumber}")
+
     public ResponseEntity<TrackingInfo> trackOrder(@PathVariable String orderNumber){
         return this.trackingService.trackOrder(orderNumber);
     }
