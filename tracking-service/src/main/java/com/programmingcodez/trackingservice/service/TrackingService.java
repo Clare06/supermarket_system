@@ -59,7 +59,7 @@ public class TrackingService {
 
             this.webClientBuilder.build()
                     .put()
-                    .uri("http://order-service/api/order/updateTracking")
+                    .uri("http://localhost:8081/api/order/updateTracking")
                     .bodyValue(new OrderListDto(acceptDeliveryDto.getOrderNumber(), OrderStatus.SHIPPED))
                     .retrieve()
                     .toBodilessEntity()
@@ -80,7 +80,7 @@ public class TrackingService {
 
             this.webClientBuilder.build()
                     .put()
-                    .uri("http://order-service/api/order/updateTracking")
+                    .uri("http://localhost:8081/api/order/updateTracking")
                     .bodyValue(new OrderListDto(orderNumber, OrderStatus.DELIVERED))
                     .retrieve()
                     .toBodilessEntity()
