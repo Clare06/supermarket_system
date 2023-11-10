@@ -22,15 +22,18 @@ public class GatewayConfig {
                 .route("product-service", r -> r.path("/api/product/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://product-service"))
-                .route("order-service", r -> r.path("/api/order")
+                .route("order-service", r -> r.path("/api/order/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://order-service"))
-                .route("tracking-service", r -> r.path("/api/tracking")
+                .route("tracking-service", r -> r.path("/api/tracking/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://tracking-service"))
-                .route("delivery-service", r -> r.path("/api/delivery")
+                .route("delivery-service", r -> r.path("/api/delivery/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://delivery-service"))
+                .route("delivery-service", r -> r.path("/api/user/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://user-service"))
                 .build();
     }
 }
