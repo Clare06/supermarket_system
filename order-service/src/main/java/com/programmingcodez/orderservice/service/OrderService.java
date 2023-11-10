@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -146,4 +147,15 @@ public class OrderService {
         return orderLineItems;
     }
 
+    public ResponseEntity<Void> updateTrackingStatus (TrackingInfo trackingInfo){
+        try{
+            Order order = this.orderRepository.findByOrderNumber(trackingInfo.getOrderNumber());
+            order.setTrackingStatus(trackingInfo.getOrderStatus());
+            this.orderRepository.save(order);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

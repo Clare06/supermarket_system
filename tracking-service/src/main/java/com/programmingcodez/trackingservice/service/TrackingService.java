@@ -7,10 +7,12 @@ import com.programmingcodez.trackingservice.dto.OrderListDto;
 
 import com.programmingcodez.trackingservice.entity.TrackingInfo;
 import com.programmingcodez.trackingservice.repository.TrackingRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 
 import java.util.ArrayList;
@@ -18,10 +20,13 @@ import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class TrackingService {
 
     @Autowired
     private TrackingRepository trackingRepository;
+
+    private final WebClient.Builder webClientBuilder;
 
 
     public ResponseEntity<List<TrackingInfo>> getAllOrders(){
@@ -51,6 +56,15 @@ public class TrackingService {
             trackingInfo.setCarrierId(acceptDeliveryDto.getCarrierId());
             trackingInfo.setOrderStatus(OrderStatus.SHIPPED);
             this.trackingRepository.save(trackingInfo);
+
+            this.webClientBuilder.build()
+                    .put()
+                    .uri("http://order-service/api/order/updateTracking")
+                    .bodyValue(new OrderListDto(acceptDeliveryDto.getOrderNumber(), OrderStatus.SHIPPED))
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         else{
@@ -63,6 +77,15 @@ public class TrackingService {
             TrackingInfo trackingInfo = this.trackingRepository.findById(orderNumber).orElse(null);
             trackingInfo.setOrderStatus(OrderStatus.DELIVERED);
             this.trackingRepository.save(trackingInfo);
+
+            this.webClientBuilder.build()
+                    .put()
+                    .uri("http://order-service/api/order/updateTracking")
+                    .bodyValue(new OrderListDto(orderNumber, OrderStatus.DELIVERED))
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         else{

@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findByStatusAndTimestampBefore(Order.OrderStatus status, Timestamp timestamp);
+    Order findByOrderNumber(String orderNumber);
 }
