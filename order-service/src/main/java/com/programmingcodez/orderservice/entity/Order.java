@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+
+import java.sql.Timestamp;
 import java.util.List;
 @Entity
 @Table(name = "t_orders")
@@ -17,6 +19,23 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String orderNumber;
-    @OneToMany(cascade = CascadeType.ALL)
+    private String userName;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderLineItem> orderLineItemsList;
+    private OrderStatus status;
+    private Timestamp timestamp;
+
+    //tracking
+    private TrackingStatus trackingStatus;
+
+    public enum TrackingStatus{
+        PROCESSING,
+        SHIPPED,
+        DELIVERED
+    }
+
+    public enum OrderStatus{
+        PENDING,COMPLETED,FAILED
+    }
 }
+

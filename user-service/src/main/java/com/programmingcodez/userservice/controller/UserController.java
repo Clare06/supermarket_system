@@ -1,5 +1,6 @@
 package com.programmingcodez.userservice.controller;
 
+import com.programmingcodez.userservice.Exceptions.UsernameDuplicationException;
 import com.programmingcodez.userservice.dto.LoginInfo;
 import com.programmingcodez.userservice.entity.User;
 import com.programmingcodez.userservice.jwt.JwtUtil;
@@ -34,12 +35,20 @@ public class UserController {
 
     @GetMapping("/checkUser/{userName}")
     public ResponseEntity<Boolean> checkUser(@PathVariable String userName){
+        Boolean result=this.userService.checkUser(userName);
         return new ResponseEntity<>(this.userService.checkUser(userName), HttpStatus.OK);
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<User> addUser(@RequestBody User user){
-        return new ResponseEntity<>(this.userService.addUser(user), HttpStatus.OK);
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        try {
+            User addedUser = userService.addUser(user);
+            return ResponseEntity.ok(addedUser);
+        } catch (UsernameDuplicationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request.");
+        }
     }
 
     @PutMapping("/editUser")
@@ -52,13 +61,6 @@ public class UserController {
         return new ResponseEntity<>(this.userService.deleteUser(userName), HttpStatus.OK);
     }
 
-    @PostMapping("authenticate")
-    public ResponseEntity<String> authenticate(@RequestBody LoginInfo loginInfo) {
 
-        if (this.userService.userAuth(loginInfo)){
-            String token = jwtUtil.generateToken(loginInfo);
-            return ResponseEntity.ok(token);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
-    }
+
 }

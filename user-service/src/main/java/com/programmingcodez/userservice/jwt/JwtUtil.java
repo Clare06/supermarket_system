@@ -46,7 +46,7 @@ public class JwtUtil {
         Optional<User> usr = userService.getUser(loginInfo.getUserName());
         Map<String, Object> claims = new HashMap<>();
         claims.put("userName",usr.get().getUserName());
-        claims.put("role",usr.get().isAdminAcc());
+        claims.put("role",usr.get().isCus());
         return createToken(claims);
     }
     private String createToken(Map<String, Object> claims) {
@@ -54,4 +54,10 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // token will expire after 10 hours
                 .signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+
+
 }
