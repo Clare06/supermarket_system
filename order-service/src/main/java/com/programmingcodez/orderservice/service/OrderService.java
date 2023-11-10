@@ -4,6 +4,7 @@ import com.programmingcodez.orderservice.controller.ChargeController;
 import com.programmingcodez.orderservice.dto.*;
 import com.programmingcodez.orderservice.entity.Order;
 import com.programmingcodez.orderservice.entity.OrderLineItem;
+import com.programmingcodez.orderservice.event.OrderPlacedEvent;
 import com.programmingcodez.orderservice.exception.ItemsNotInStockException;
 import com.programmingcodez.orderservice.repository.OrderRepository;
 import com.stripe.exception.StripeException;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +36,7 @@ public class OrderService {
     @Autowired
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaTemplate<String,OrderPlacedEvent> kafkaTemplate;
 
     @Transactional
     public void removeOrder(Long orderId) {
@@ -74,6 +78,7 @@ public class OrderService {
             order.setStatus(Order.OrderStatus.PENDING);
             order.setTimestamp(new Timestamp(System.currentTimeMillis()));
             orderRepository.save(order);
+            kafkaTemplate.send("notificationmsg",new OrderPlacedEvent(order.getOrderNumber()));
             return new InventoryUpdateRequestDto(order.getId(), skuCodes);
             }else {
                 throw new IllegalStateException("Inventory-error");
