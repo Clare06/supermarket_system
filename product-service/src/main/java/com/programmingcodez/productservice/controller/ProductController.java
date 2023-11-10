@@ -21,6 +21,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createProduct(@RequestBody ProductRequest productRequest) {
+        System.out.println("I have been called");
         productService.createProduct(productRequest);
 
     }
@@ -72,6 +73,11 @@ public class ProductController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/{skuCode}")
+    public ResponseEntity<Product> getProductBySkuCode (@PathVariable String skuCode){
+        return new ResponseEntity<>(this.productService.getProductBySkuCode(skuCode), HttpStatus.OK);
     }
 
 
