@@ -74,6 +74,11 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/{skuCode}")
+    public ResponseEntity<Product> getProductBySkuCode (@PathVariable String skuCode){
+        return new ResponseEntity<>(this.productService.getProductBySkuCode(skuCode), HttpStatus.OK);
+    }
+
 
 
 }

@@ -20,10 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -146,4 +143,42 @@ public class OrderService {
         return orderLineItems;
     }
 
+
+    public List<ViewOrdersDto> viewOrdersByUser (String userName){
+
+        List<Order> orderList = this.orderRepository.findByUserName(userName);
+
+        List<ViewOrdersDto> viewOrdersList = new ArrayList<>();
+
+        for (Order order : orderList){
+            ViewOrdersDto temp = new ViewOrdersDto();
+            temp.setUserName(userName);
+            temp.setOrderNumber(order.getOrderNumber());
+            temp.setTimestamp(order.getTimestamp());
+            temp.setTrackingStatus(order.getTrackingStatus());
+
+            List<ProductInfoDto> productInfoTempList = new ArrayList<>();
+            for (OrderLineItem orderLineItem : order.getOrderLineItemsList()){
+                ProductInfoDto productInfoTemp = new ProductInfoDto();
+                productInfoTemp.setSkucode(orderLineItem.getSkuCode());
+                productInfoTemp.setQuantity(orderLineItem.getQuantity());
+
+                ProductEntityDto productEntityDto = this.webClientBuilder.build()
+                        .get()
+                        .uri("http://product-service/api/product/{skuCode}", orderLineItem.getSkuCode())
+                        .retrieve()
+                        .bodyToMono(ProductEntityDto.class)
+                        .block();
+                productInfoTemp.setName(productEntityDto.getName());
+                productInfoTemp.setPrice(productEntityDto.getPrice());
+
+                productInfoTempList.add(productInfoTemp);
+            }
+
+            temp.setProductInfoList(productInfoTempList);
+            viewOrdersList.add(temp);
+        }
+
+        return viewOrdersList;
+    }
 }
