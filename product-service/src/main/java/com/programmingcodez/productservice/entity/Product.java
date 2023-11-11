@@ -24,4 +24,11 @@ public class Product {
     private String category;
     // product image
     private String imageURl;
+    // Product type to differentiate products units vs weight
+    private ProductType type;
+
+    public enum ProductType {
+        unit,
+        weight
+    }
 }

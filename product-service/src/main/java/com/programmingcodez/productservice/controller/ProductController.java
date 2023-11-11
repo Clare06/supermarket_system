@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.util.List;
 
@@ -21,15 +23,19 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createProduct(@RequestBody ProductRequest productRequest) {
-        System.out.println("I have been called");
         productService.createProduct(productRequest);
-
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProductResponse> getAllProducts() {
         return productService.getAllProducts();
+    }
+
+    @GetMapping("/{skucode}")
+    @ResponseStatus(HttpStatus.OK)
+    public Product getProductBySkuCode(@PathVariable String skucode) {
+        return productService.getProductBySkuCode(skucode);
     }
 
     @DeleteMapping("/{skucode}")
@@ -74,7 +80,5 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 
 }

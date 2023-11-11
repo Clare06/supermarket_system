@@ -1,5 +1,6 @@
 package com.programmingcodez.productservice.dto;
 
+import com.programmingcodez.productservice.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,6 @@ public class ProductRequest {
     private BigDecimal price;
     private String category;
     private String imageURl;
+    // Product type to differentiate products units vs weight
+    private Product.ProductType type;
 }
