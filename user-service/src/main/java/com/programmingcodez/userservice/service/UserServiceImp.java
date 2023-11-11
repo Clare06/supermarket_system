@@ -8,7 +8,10 @@ import com.programmingcodez.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +43,7 @@ public class UserServiceImp implements UserService {
             if (checkUser(user.getUserName())) {
                 throw new UsernameDuplicationException("Username is already taken: " + user.getUserName());
             } else {
-
+                user.setPassword(bcryptPassword(user.getPassword()));
                 return this.userRepository.save(user);
             }
 
@@ -74,8 +77,24 @@ public class UserServiceImp implements UserService {
     public boolean userAuth(LoginInfo loginInfo) {
         Optional<User> user= this.userRepository.findById(loginInfo.getUserName());
         if (checkUser(loginInfo.getUserName())){
-            return loginInfo.getPassword().equals(user.get().getPassword());
+            return bcryptMatch(loginInfo.getPassword(),user.get().getPassword());
         }
         return false;
+    }
+    public String bcryptPassword(String password){
+        int strength = 10; // work factor of bcrypt
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(strength, new SecureRandom());
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+        return encodedPassword;
+    }
+    public boolean bcryptMatch(String usrEntered, String dbPass) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return  encoder.matches(usrEntered,dbPass);
+    }
+    public void updatePassword(User user, String newPassword) {
+        // Update the user's password
+        String encodedPassword=this.bcryptPassword(newPassword);
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
     }
 }
