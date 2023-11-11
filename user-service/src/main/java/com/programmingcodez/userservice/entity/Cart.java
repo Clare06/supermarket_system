@@ -14,10 +14,7 @@ import java.util.List;
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
     @OneToOne
-    @MapsId
     private User user;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cart")
     private List<CartItem> cartItems;

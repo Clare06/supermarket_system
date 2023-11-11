@@ -1,11 +1,16 @@
 package com.programmingcodez.userservice.service;
 
+import com.programmingcodez.userservice.dto.CartInfoDto;
 import com.programmingcodez.userservice.entity.User;
 import com.programmingcodez.userservice.entity.Cart;
+import org.springframework.http.ResponseEntity;
 
 public interface CartService {
 
-//        public String addItemToCart(User user, Product product, int quantity);
-//    public Cart getUserCart(String userId);
+    public ResponseEntity <String> addItemToCart(CartInfoDto cartInfoDto);
+    public ResponseEntity <Cart> getUserCart(String userName);
+    public ResponseEntity <Void> clearCart(String userName);
+    public ResponseEntity <Cart> deleteItem(String userName, String skuCode);
+    public ResponseEntity <Cart> updateItem(String userName, String skuCode);
 
 }

@@ -13,12 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartItem {
     @Id
-    private Long id;
+    private String skuCode;
+    private  int qyt;
 
 //    @ManyToOne
 //    private Product product;
 
-    @ManyToOne
-    private Cart cart;
-    private int quantity;
+//    @ManyToOne
+//    private Cart cart;
+//    private int quantity;
 }
