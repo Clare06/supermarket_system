@@ -35,4 +35,7 @@ public class InventoryController {
     public String rollBack(@RequestBody List<InventoryRequest> inventoryRequest){
         return inventoryService.rollBackUpdate(inventoryRequest);
     }
+
 }
+
+
