@@ -21,8 +21,6 @@ public class User {
     private String email;
     private String name;
     private int age;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Cart cart;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dob;

@@ -5,13 +5,11 @@ import com.programmingcodez.userservice.dto.InventoryRequest;
 import com.programmingcodez.userservice.dto.InventoryResponse;
 import com.programmingcodez.userservice.entity.Cart;
 import com.programmingcodez.userservice.entity.CartItem;
-import com.programmingcodez.userservice.entity.User;
 import com.programmingcodez.userservice.repository.CartRepository;
 import com.programmingcodez.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,26 +32,23 @@ public class CartServiceImp implements CartService {
     @Override
     public ResponseEntity<String> addItemToCart(CartInfoDto cartInfo) {
         if (userRepository.existsById(cartInfo.getUserName())){
-            User user = userRepository.findById(cartInfo.getUserName()).orElse(null);
 
-            InventoryRequest inventoryRequest = new InventoryRequest(cartInfo.getSkuCode(), cartInfo.getQyt());
-
+            InventoryRequest inventoryRequest = new InventoryRequest(cartInfo.getSkuCode(), cartInfo.getQty());
              //check if the stock is available
-            List<InventoryResponse> invenResponse = webClientBuilder.build()
+            Boolean isAvailable = webClientBuilder.build()
                     .post()
-                    .uri("http://inventory-service/api/inventory/stock")
-                    .bodyValue(Collections.singletonList(inventoryRequest)) // Set the list as the request body
+                    .uri("http://localhost:8084/api/inventory/checkItem")
+                    .bodyValue(inventoryRequest)
                     .retrieve()
-                    .bodyToFlux(InventoryResponse.class)
-                    .collectList()
+                    .bodyToMono(Boolean.class)
                     .block();
 
-            if (invenResponse.get(0).isInStock()){
-                Cart cart = this.cartRepository.findById(user).orElse(new Cart(user, new ArrayList<>()));
-
+            if (isAvailable){
+                Cart cart = this.cartRepository.findById(cartInfo.getUserName())
+                        .orElse(new Cart(cartInfo.getUserName(), new ArrayList<>()));
 
                 List<CartItem> cartItems = cart.getCartItems();
-                cartItems.add(new CartItem(cartInfo.getSkuCode(), cartInfo.getQyt()));
+                cartItems.add(new CartItem(cartInfo.getSkuCode(), cartInfo.getQty()));
                 cart.setCartItems(cartItems);
                 this.cartRepository.save(cart);
 
@@ -73,8 +67,7 @@ public class CartServiceImp implements CartService {
     @Override
     public ResponseEntity<Cart> getUserCart(String userName) {
         if (this.userRepository.existsById(userName)){
-            User user = this.userRepository.findById(userName).orElse(null);
-            Cart cart = this.cartRepository.findById(user).orElse(new Cart(user, new ArrayList<>()));
+            Cart cart = this.cartRepository.findById(userName).orElse(new Cart(userName, new ArrayList<>()));
             return new ResponseEntity<>(cart, HttpStatus.OK);
         }
         else{
@@ -85,7 +78,7 @@ public class CartServiceImp implements CartService {
     @Override
     public ResponseEntity<Void> clearCart(String userName) {
         if (this.userRepository.existsById(userName)){
-            this.cartRepository.deleteById(this.userRepository.findById(userName).orElse(new User()));
+            this.cartRepository.deleteById(userName);
             return ResponseEntity.ok().build();
         }
         else{
@@ -96,7 +89,7 @@ public class CartServiceImp implements CartService {
     @Override
     public ResponseEntity<Cart> deleteItem(String userName, String skuCode) {
         if (this.userRepository.existsById(userName)){
-            Cart cart = this.cartRepository.findById(this.userRepository.findById(userName).orElse(new User())).orElse(new Cart());
+            Cart cart = this.cartRepository.findById(userName).orElse(new Cart());
             List<CartItem> cartItems= cart.getCartItems();
             cartItems.removeIf(cartItem -> cartItem.getSkuCode().equals(skuCode));
             cart.setCartItems(cartItems);
@@ -112,12 +105,12 @@ public class CartServiceImp implements CartService {
     @Override
     public ResponseEntity<Cart> updateItem(CartInfoDto cartInfo) {
         if (this.userRepository.existsById(cartInfo.getUserName())){
-            Cart cart = this.cartRepository.findById(this.userRepository.findById(cartInfo.getUserName()).orElse(new User())).orElse(new Cart());
+            Cart cart = this.cartRepository.findById(cartInfo.getUserName()).orElse(new Cart());
             List<CartItem> cartItems= cart.getCartItems();
 
             for (CartItem cartItem : cartItems){
                 if (cartItem.getSkuCode().equals(cartInfo.getSkuCode())){
-                    cartItem.setQyt(cartInfo.getQyt());
+                    cartItem.setQyt(cartInfo.getQty());
                 }
             }
             cart.setCartItems(cartItems);

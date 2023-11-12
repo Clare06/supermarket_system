@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class CartInfoDto {
     private String userName;
     private String skuCode;
-    private int qyt;
+    private int qty;
 }
