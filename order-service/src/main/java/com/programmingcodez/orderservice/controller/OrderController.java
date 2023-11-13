@@ -46,7 +46,7 @@ public class OrderController {
             orderService.removeOrder(completeRequestDto.getInventoryUpdateRequest().getOrderID());
             String rollBackInventory= webClientBuilder.build()
                     .put()
-                    .uri("http://localhost:8084/api/inventory/roll-back")
+                    .uri("http://inventory-service/api/inventory/roll-back")
                     .bodyValue(completeRequestDto.getInventoryUpdateRequest().getInventoryRequests())
                     .retrieve()
                     .bodyToMono(String.class)

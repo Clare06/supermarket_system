@@ -29,8 +29,8 @@ public class InventoryService {
     private static final String DEDUCT_INVENTORY_CIRCUIT_BREAKER = "deduct-inventory-circuit-breaker";
     private static final String DEDUCT_INVENTORY_RETRY = "deduct-inventory-retry";
 
-    @CircuitBreaker(name = ADD_INVENTORY_CIRCUIT_BREAKER, fallbackMethod = "addInventoryFallback")
-    @Retry(name = ADD_INVENTORY_RETRY)
+//    @CircuitBreaker(name = ADD_INVENTORY_CIRCUIT_BREAKER, fallbackMethod = "addInventoryFallback")
+//    @Retry(name = ADD_INVENTORY_RETRY)
     public String addInventory(InventoryDto inventoryDto) {
         try{
             System.out.println(inventoryDto.getSkuCode());

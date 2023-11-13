@@ -79,6 +79,14 @@ public class OrderService {
             order.setStatus(Order.OrderStatus.PENDING);
             order.setTimestamp(new Timestamp(System.currentTimeMillis()));
             orderRepository.save(order);
+
+                webClientBuilder.build()
+                        .post()
+                        .uri("http://notification-service/send?message="+order.getOrderNumber()+" order placed")
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+
             return new InventoryUpdateRequestDto(order.getId(), skuCodes);
             }else {
                 throw new IllegalStateException("Inventory-error");
