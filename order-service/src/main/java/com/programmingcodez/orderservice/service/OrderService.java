@@ -7,6 +7,8 @@ import com.programmingcodez.orderservice.entity.OrderLineItem;
 import com.programmingcodez.orderservice.exception.ItemsNotInStockException;
 import com.programmingcodez.orderservice.repository.OrderRepository;
 import com.stripe.exception.StripeException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +34,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
 
+    public static final String PLACE_ORDER_CIRCUIT_BREAKER = "place-order-circuit-breaker";
+    public static final String PLACE_ORDER_RETRY = "place-order-retry";
+
     @Transactional
     public void removeOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
     @Transactional
+    @CircuitBreaker(name = PLACE_ORDER_CIRCUIT_BREAKER, fallbackMethod = "placeOrderFallback")
+    @Retry(name = PLACE_ORDER_RETRY)
     public InventoryUpdateRequestDto placeOrder(OrderRequest orderRequest, String username) throws ItemsNotInStockException {
 
         List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemsDtoList()
@@ -79,6 +86,12 @@ public class OrderService {
         } else {
             throw  new ItemsNotInStockException(invenResponse);
         }
+    }
+
+    // Fallback method to handle place-order-circuit-breaker open state
+    private InventoryUpdateRequestDto placeOrderFallback(OrderRequest orderRequest, String username, Throwable throwable) {
+        System.out.println("Error: Service is currently unavailable. Please try again later.");
+        return null;
     }
     @Transactional
     public String completeOrder(CompleteRequestDto completeRequestDto) {

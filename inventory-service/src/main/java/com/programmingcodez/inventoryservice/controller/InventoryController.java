@@ -3,6 +3,7 @@ package com.programmingcodez.inventoryservice.controller;
 import com.programmingcodez.inventoryservice.dto.InventoryDto;
 import com.programmingcodez.inventoryservice.dto.InventoryRequest;
 import com.programmingcodez.inventoryservice.dto.InventoryResponse;
+import com.programmingcodez.inventoryservice.entity.Inventory;
 import com.programmingcodez.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,4 +36,17 @@ public class InventoryController {
     public String rollBack(@RequestBody List<InventoryRequest> inventoryRequest){
         return inventoryService.rollBackUpdate(inventoryRequest);
     }
+
+    @PostMapping("checkItem")
+    public Boolean checkItem(@RequestBody InventoryRequest inventoryRequest){
+        return this.inventoryService.checkItem(inventoryRequest);
+    }
+
+    @GetMapping("getAll")
+    public List<Inventory> getAll(){
+        return this.inventoryService.getAll();
+    }
+
 }
+
+

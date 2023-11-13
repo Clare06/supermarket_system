@@ -15,7 +15,6 @@ import java.util.Date;
 @Table(name = "user_table")
 public class User {
 
-
     @Id
     private String userName;
     private String password;
