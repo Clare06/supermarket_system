@@ -1,6 +1,7 @@
 package com.programmingcodez.userservice.service;
 
 import com.programmingcodez.userservice.dto.LoginInfo;
+import com.programmingcodez.userservice.entity.Cart;
 import com.programmingcodez.userservice.entity.User;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface UserService{
     public String deleteUser(String userName);
 
     public boolean userAuth(LoginInfo loginInfo);
+
+
 }

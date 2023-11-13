@@ -130,4 +130,13 @@ public class InventoryService {
         }
         return "inventory-updated";
     }
+
+    public Boolean checkItem (InventoryRequest request){
+        Inventory inventory = this.inventoryRepository.findBySkuCode(request.getSkuCode());
+        return (inventory.getQuantity()>=request.getQuantity());
+    }
+
+    public List<Inventory> getAll (){
+        return this.inventoryRepository.findAll();
+    }
 }

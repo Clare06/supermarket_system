@@ -77,7 +77,7 @@ public class UserServiceImp implements UserService {
     public boolean userAuth(LoginInfo loginInfo) {
         Optional<User> user= this.userRepository.findById(loginInfo.getUserName());
         if (checkUser(loginInfo.getUserName())){
-            return bcryptMatch(loginInfo.getPassword(),user.get().getPassword());
+           return bcryptMatch(loginInfo.getPassword(),user.get().getPassword());
         }
         return false;
     }
