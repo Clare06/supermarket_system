@@ -27,7 +27,7 @@ public class DeliveryServiceImp implements DeliveryService{
     public List<OrderList> getAvailableOrders() {
         return this.webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8083/api/tracking/toDeliver")
+                .uri("http://tracking-service/api/tracking/toDeliver")
                 .retrieve()
                 .bodyToFlux(OrderList.class)
                 .collectList()
@@ -49,7 +49,7 @@ public class DeliveryServiceImp implements DeliveryService{
         try {
             this.webClientBuilder.build()
                     .put()
-                    .uri("http://localhost:8083/api/tracking/acceptDeliver")
+                    .uri("http://tracking-service/api/tracking/acceptDeliver")
                     .bodyValue(acceptDeliveryDto)
                     .retrieve()
                     .toBodilessEntity()
@@ -76,7 +76,7 @@ public class DeliveryServiceImp implements DeliveryService{
         try {
             this.webClientBuilder.build()
                     .put()
-                    .uri("http://localhost:8083/api/tracking/complete/{orderNumber}", deliveryDto.getOrderNumber())
+                    .uri("http://tracking-service/api/tracking/complete/{orderNumber}", deliveryDto.getOrderNumber())
                     .retrieve()
                     .toBodilessEntity()
                     .block();

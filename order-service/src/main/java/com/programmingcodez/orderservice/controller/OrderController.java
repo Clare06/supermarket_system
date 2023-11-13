@@ -1,9 +1,6 @@
 package com.programmingcodez.orderservice.controller;
 
-import com.programmingcodez.orderservice.dto.CompleteRequestDto;
-import com.programmingcodez.orderservice.dto.InventoryResponse;
-import com.programmingcodez.orderservice.dto.InventoryUpdateRequestDto;
-import com.programmingcodez.orderservice.dto.OrderRequest;
+import com.programmingcodez.orderservice.dto.*;
 import com.programmingcodez.orderservice.exception.ItemsNotInStockException;
 import com.programmingcodez.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +55,13 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/viewOrders/{userName}")
+    public List<ViewOrdersDto> viewOrdersByUser(@PathVariable String userName){
+        return this.orderService.viewOrdersByUser(userName);
+    }
 
+    @PutMapping("updateTracking")
+    public ResponseEntity<Void> updateTracking(@RequestBody TrackingInfo trackingInfo){
+        return this.orderService.updateTrackingStatus(trackingInfo);
+    }
 }
