@@ -42,8 +42,8 @@ public class OrderService {
         orderRepository.deleteById(orderId);
     }
     @Transactional
-    @CircuitBreaker(name = PLACE_ORDER_CIRCUIT_BREAKER, fallbackMethod = "placeOrderFallback")
-    @Retry(name = PLACE_ORDER_RETRY)
+//    @CircuitBreaker(name = PLACE_ORDER_CIRCUIT_BREAKER, fallbackMethod = "placeOrderFallback")
+//    @Retry(name = PLACE_ORDER_RETRY)
     public InventoryUpdateRequestDto placeOrder(OrderRequest orderRequest, String username) throws ItemsNotInStockException {
 
         List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemsDtoList()
